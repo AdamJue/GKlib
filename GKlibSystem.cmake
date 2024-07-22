@@ -18,7 +18,7 @@ option(NO_X86 "enable NO_X86 support" OFF)
 
 # Add compiler flags.
 if(MSVC)
-  set(GKlib_COPTS "/Ox")
+ # set(GKlib_COPTS "/Ox")
   set(GKlib_COPTIONS "-DWIN32 -DMSC -D_CRT_SECURE_NO_DEPRECATE -DUSE_GKREGEX")
 elseif(MINGW)
   set(GKlib_COPTS "-DUSE_GKREGEX")
@@ -33,6 +33,8 @@ if(CMAKE_COMPILER_IS_GNUCC)
   set(GKlib_COPTIONS "${GKlib_COPTIONS} -std=c99 -fno-strict-aliasing")
 if(VALGRIND)
   set(GKlib_COPTIONS "${GK_COPTIONS} -march=x86-64 -mtune=generic")
+elseif(1)
+  # Use flags from toolchain and triplet
 else()
 # -march=native is not a valid flag on PPC:
 if(CMAKE_SYSTEM_PROCESSOR MATCHES "power|ppc|powerpc|ppc64|powerpc64" OR (APPLE AND CMAKE_OSX_ARCHITECTURES MATCHES "ppc|ppc64"))
@@ -46,6 +48,7 @@ endif(VALGRIND)
   endif(NOT MINGW)
 # GCC warnings.
   set(GKlib_COPTIONS "${GKlib_COPTIONS} -Werror -Wall -pedantic -Wno-unused-function -Wno-unused-but-set-variable -Wno-unused-variable -Wno-unknown-pragmas -Wno-unused-label")
+  string(REPLACE " -Werror " " " GKlib_COPTIONS "${GKlib_COPTIONS}")
 elseif(${CMAKE_C_COMPILER_ID} MATCHES "Sun")
 # Sun insists on -xc99.
   set(GKlib_COPTIONS "${GKlib_COPTIONS} -xc99")
@@ -75,6 +78,8 @@ endif(NO_X86)
 if(GDB)
   set(GKlib_COPTS "${GKlib_COPTS} -g")
   set(GKlib_COPTIONS "${GKlib_COPTIONS} -Werror")
+elseif(1)
+  # Use flags from toolchain and triplet
 else()
   set(GKlib_COPTS "-O3")
 endif(GDB)
@@ -113,7 +118,9 @@ endif(GKRAND)
 
 
 # Check for features.
+if(NOT ANDROID OR ANDROID_NATIVE_API_LEVEL GREATER 32)
 check_include_file(execinfo.h HAVE_EXECINFO_H)
+endif()
 if(HAVE_EXECINFO_H)
   set(GKlib_COPTIONS "${GKlib_COPTIONS} -DHAVE_EXECINFO_H")
 endif(HAVE_EXECINFO_H)
