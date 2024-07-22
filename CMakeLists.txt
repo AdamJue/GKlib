@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.22)
 project(GKlib C)
 
 option(BUILD_SHARED_LIBS "Build shared libraries (.dll/.so) instead of static ones (.lib/.a)" OFF)
@@ -22,10 +22,10 @@ if(UNIX)
   target_link_libraries(GKlib m)
 endif(UNIX)
 
-include_directories("test")
-add_subdirectory("test")
-
 install(TARGETS GKlib
-  ARCHIVE DESTINATION lib/${LINSTALL_PATH}
-  LIBRARY DESTINATION lib/${LINSTALL_PATH})
+   EXPORT GKlibTargets
+   INCLUDES DESTINATION "include/GKlib"
+  )
+install(EXPORT GKlibTargets FILE "GKlibConfig.cmake" DESTINATION "share/gklib")
+install(FILES "win32/adapt.h" DESTINATION "include/${HINSTALL_PATH}/win32")  
 install(FILES ${GKlib_includes} DESTINATION include/${HINSTALL_PATH})
